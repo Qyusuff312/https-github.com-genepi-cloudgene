@@ -9,8 +9,6 @@ import java.util.function.Function;
 
 import org.apache.commons.io.FileUtils;
 import org.reactivestreams.Publisher;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
 
 import genepi.io.FileUtil;
 import io.micronaut.http.HttpResponse;
@@ -27,43 +25,30 @@ public class FormUtil {
 	@Inject
 	protected cloudgene.mapred.server.Application application;
 
-	public Publisher<HttpResponse<Object>> processMultipartBody(MultipartBody body,
+	public synchronized Publisher<HttpResponse<Object>> processMultipartBody(MultipartBody body,
 			Function<List<Parameter>, HttpResponse<Object>> callback) {
 
 		return Mono.<HttpResponse<Object>>create(emitter -> {
 
-			body.subscribe(new Subscriber<CompletedPart>() {
-
-				List<Parameter> form = new Vector<Parameter>();
-
-				private Subscription s;
-
-				@Override
-				public void onSubscribe(Subscription s) {
-					this.s = s;
-					s.request(1);
+			List<Parameter> form = new Vector<Parameter>();
+			Mono.from(body).map(completedPart -> {
+				System.out.println(completedPart.getName());
+				Parameter formParameter = proessCompletedPart(completedPart);
+				if (formParameter != null) {
+					form.add(formParameter);
 				}
+				return completedPart;
+
+			}).doOnTerminate(new Runnable() {
 
 				@Override
-				public void onNext(CompletedPart completedPart) {
-					Parameter formParameter = proessCompletedPart(completedPart);
-					if (formParameter != null) {
-						form.add(formParameter);
-					}
-					s.request(1);
-				}
-
-				@Override
-				public void onError(Throwable t) {
-					emitter.error(t);
-				}
-
-				@Override
-				public void onComplete() {
+				public void run() {
 					HttpResponse<Object> result = callback.apply(form);
 					emitter.success(result);
+
 				}
-			});
+
+			}).subscribe();
 		});
 
 	}
@@ -126,6 +111,11 @@ public class FormUtil {
 
 		public void setValue(Object value) {
 			this.value = value;
+		}
+
+		@Override
+		public String toString() {
+			return name + " = " + value;
 		}
 	}
 
