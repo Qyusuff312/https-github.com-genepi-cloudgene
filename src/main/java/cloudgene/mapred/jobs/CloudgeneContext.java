@@ -57,8 +57,8 @@ public class CloudgeneContext extends WorkflowContext {
 
 	private int chunks = 0;
 
-	private Map<String, List<Download>> customDownloads = new HashMap<String,  List<Download>>();
-	
+	private Map<String, List<Download>> customDownloads = new HashMap<String, List<Download>>();
+
 	public CloudgeneContext(CloudgeneJob job) {
 
 		this.workingDirectory = job.getWorkingDirectory();
@@ -223,26 +223,26 @@ public class CloudgeneContext extends WorkflowContext {
 			return result;
 		}
 	}
-	
+
 	@Override
 	public void addDownload(String param, String name, String size, String path) {
 		List<Download> downloads = customDownloads.get(param);
 		if (downloads == null) {
 			new RuntimeException("Parameter " + param + " is unknown.");
 		}
-		
-		String hash = HashUtil.getSha256(name + size + path + (Math.random() * 100000));		
+
+		String hash = HashUtil.getSha256(name + size + path + (Math.random() * 100000));
 		Download download = new Download();
 		download.setName(name);
 		download.setSize(size);
 		download.setPath(path);
 		download.setHash(hash);
 		download.setCount(CloudgeneJob.MAX_DOWNLOAD);
-		
+
 		downloads.add(download);
 	}
-	
-	public List<Download> getDownloads(String param){
+
+	public List<Download> getDownloads(String param) {
 		return customDownloads.get(param);
 	}
 
@@ -326,10 +326,10 @@ public class CloudgeneContext extends WorkflowContext {
 		Settings settings = getSettings();
 
 		if (settings.getMail() != null) {
-		
-		MailUtil.send(settings.getMail().get("smtp"), settings.getMail().get("port"), settings.getMail().get("user"),
-				settings.getMail().get("password"), settings.getMail().get("name"), to,
-				"[" + settings.getName() + "] " + subject, body);
+
+			MailUtil.send(settings.getMail().get("smtp"), settings.getMail().get("port"),
+					settings.getMail().get("user"), settings.getMail().get("password"), settings.getMail().get("name"),
+					to, "[" + settings.getName() + "] " + subject, body);
 
 		}
 		return true;
@@ -444,7 +444,6 @@ public class CloudgeneContext extends WorkflowContext {
 		logs.add(status);
 	}
 
-	
 	public Message createTask(String name) {
 		Message status = new Message(step, Message.RUNNING, name);
 
@@ -457,8 +456,6 @@ public class CloudgeneContext extends WorkflowContext {
 		return status;
 	}
 
-	
-	
 	public void beginTask(String name, int totalWork) {
 		beginTask(name);
 	}
@@ -515,6 +512,25 @@ public class CloudgeneContext extends WorkflowContext {
 
 		FileUtil.copy(filename, FileUtil.path(chunkFolder, chunkFilename));
 		message(chunkFilename, 27);
+	}
+
+	public Map<String, String> getConfig() {
+		return config;
+	}
+
+	public Map<String, Object> getData() {
+		return data;
+	}
+
+	public Map<String, String> getParams() {
+		Map<String, String> params = new HashMap<String, String>();
+		for (CloudgeneParameterInput input : inputParameters.values()) {
+			params.put(input.getName(), input.getValue());
+		}
+		for (CloudgeneParameterOutput output : outputParameters.values()) {
+			params.put(output.getName(), output.getValue());
+		}
+		return params;
 	}
 
 }

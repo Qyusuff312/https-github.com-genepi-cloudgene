@@ -10,6 +10,7 @@ import cloudgene.mapred.plugins.hadoop.HadoopPlugin;
 import cloudgene.mapred.plugins.nextflow.NextflowPlugin;
 import cloudgene.mapred.plugins.rscript.RMarkdownPlugin;
 import cloudgene.mapred.plugins.rscript.RScriptPlugin;
+import cloudgene.mapred.plugins.weblog.WebLogPlugin;
 import cloudgene.mapred.util.Settings;
 
 public class PluginManager {
@@ -34,6 +35,7 @@ public class PluginManager {
 		plugins.add(new RScriptPlugin());
 		plugins.add(new RMarkdownPlugin());
 		plugins.add(new NextflowPlugin());
+		plugins.add(new WebLogPlugin());
 	}
 
 	public boolean initPlugins(Settings settings) {

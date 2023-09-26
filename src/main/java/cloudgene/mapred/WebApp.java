@@ -46,6 +46,7 @@ import cloudgene.mapred.api.v2.admin.server.UpdateSettings;
 import cloudgene.mapred.api.v2.admin.server.UpdateTemplate;
 import cloudgene.mapred.api.v2.data.ImporterFileList;
 import cloudgene.mapred.api.v2.jobs.CancelJob;
+import cloudgene.mapred.api.v2.jobs.CloudgeneWebLog;
 import cloudgene.mapred.api.v2.jobs.DownloadResults;
 import cloudgene.mapred.api.v2.jobs.DownloadScriptResults;
 import cloudgene.mapred.api.v2.jobs.ExternalResults;
@@ -135,6 +136,7 @@ public class WebApp extends Application {
 		router.attach(prefix + "/logout", LogoutUser.class);
 
 		router.attach(prefix + "/api/v2/collect/{job}", NextflowWebLog.class);
+		router.attach(prefix + "/api/v2/weblog/{job}", CloudgeneWebLog.class);
 
 		// jobs
 		router.attach(prefix + "/api/v2/jobs", GetJobs.class);

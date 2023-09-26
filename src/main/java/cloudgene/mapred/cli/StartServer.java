@@ -42,6 +42,12 @@ public class StartServer extends BaseTool {
 			}
 		}
 
+		if (settings.getServerUrl() == null) {
+			System.out.println("Error: serverUrl not set in settings.yaml");
+			System.exit(1);
+		}
+		
+		
 		Main main = new Main();
 		try {
 			String[] newArgs = new String[] {};

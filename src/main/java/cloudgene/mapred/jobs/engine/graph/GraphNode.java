@@ -76,7 +76,7 @@ public class GraphNode implements Runnable {
 
 		CloudgeneStepFactory factory = CloudgeneStepFactory.getInstance();
 		String classname = factory.getClassname(step);
-		step.setClassname(classname);
+		//step.setClassname(classname);
 
 		// create instance
 
@@ -92,7 +92,7 @@ public class GraphNode implements Runnable {
 				URL url = file.toURL();
 
 				URLClassLoader urlCl = new URLClassLoader(new URL[] { url }, CloudgeneJob.class.getClassLoader());
-				Class myClass = urlCl.loadClass(step.getClassname());
+				Class myClass = urlCl.loadClass(classname);
 
 				Object object = myClass.newInstance();
 
@@ -104,7 +104,7 @@ public class GraphNode implements Runnable {
 				} else if (object instanceof genepi.hadoop.common.WorkflowStep) {
 					instance = new JavaInternalStepDeprecrated((genepi.hadoop.common.WorkflowStep) object);					
 				} else {
-					instance = new ErrorStep("Error during initialization: class " + step.getClassname() + " ( "
+					instance = new ErrorStep("Error during initialization: class " + classname + " ( "
 							+ object.getClass().getSuperclass().getCanonicalName() + ") "
 							+ " has to extend CloudgeneStep or WorkflowStep. ");
 
